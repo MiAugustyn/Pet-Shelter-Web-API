@@ -1,0 +1,6 @@
+@Pet_Shelter_Web_API_HostAddress = http://localhost:5137
+
+GET {{Pet_Shelter_Web_API_HostAddress}}
+Accept: application/json
+
+###
