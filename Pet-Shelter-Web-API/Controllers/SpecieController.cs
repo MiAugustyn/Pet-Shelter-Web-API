@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Pet_Shelter_Web_API.DTO;
 using Pet_Shelter_Web_API.Interfaces;
+using Pet_Shelter_Web_API.Repositories;
 using PetShelterWebAPI.Models;
 
 namespace Pet_Shelter_Web_API.Controllers
@@ -22,7 +24,7 @@ namespace Pet_Shelter_Web_API.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<Specie>))]
         public IActionResult GetSpecies()
         {
-            var Species = _mapper.Map<List<Specie>>(_specieRepository.GetSpecies());
+            var Species = _mapper.Map<List<SpecieDTO>>(_specieRepository.GetSpecies());
 
             if (!ModelState.IsValid)
             {
@@ -43,7 +45,7 @@ namespace Pet_Shelter_Web_API.Controllers
                 return NotFound();
             }
 
-            var Specie = _mapper.Map<Specie>(_specieRepository.GetSpecie(SpecieId));
+            var Specie = _mapper.Map<SpecieDTO>(_specieRepository.GetSpecie(SpecieId));
 
             if (!ModelState.IsValid)
             {
@@ -63,7 +65,7 @@ namespace Pet_Shelter_Web_API.Controllers
                 return NotFound();
             }
 
-            var Pets = _mapper.Map<List<Pet>>(_specieRepository.GetPetsBySpecie(SpecieId));
+            var Pets = _mapper.Map<List<PetDTO>>(_specieRepository.GetPetsBySpecie(SpecieId));
 
             if (!ModelState.IsValid)
             {
@@ -71,6 +73,42 @@ namespace Pet_Shelter_Web_API.Controllers
             }
 
             return Ok(Pets);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateSpecie([FromBody] SpecieDTO NewSpecie)
+        {
+            if (NewSpecie == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var SpecieCheck = _specieRepository.GetSpecies()
+                .Where(s => s.Name.Trim().ToLower() == NewSpecie.Name.Trim().ToLower())
+                .FirstOrDefault();
+
+            if (SpecieCheck != null)
+            {
+                ModelState.AddModelError("", "Specie already exists.");
+                return StatusCode(422);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewSpecieMap = _mapper.Map<Specie>(NewSpecie);
+
+            if (!_specieRepository.CreateSpecie(NewSpecieMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving specie.");
+                return StatusCode(500);
+            }
+
+            return Ok("Specie created successfully.");
         }
     }
 }

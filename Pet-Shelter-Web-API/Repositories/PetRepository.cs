@@ -52,5 +52,17 @@ namespace Pet_Shelter_Web_API.Repositories
         {
             return _context.Pets.Any(p => p.Name.ToLower() == name.ToLower());
         }
+
+        public bool CreatePet(Pet pet)
+        {
+            _context.Add(pet);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var Save = _context.SaveChanges();
+            return Save > 0 ? true : false;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Pet_Shelter_Web_API.Interfaces;
 using PetShelterWebAPI.Data;
 using PetShelterWebAPI.Models;
+using PetShelterWebAPI.Models.JoinTables;
 
 namespace Pet_Shelter_Web_API.Repositories
 {
@@ -41,6 +42,27 @@ namespace Pet_Shelter_Web_API.Repositories
         public bool OwnerExists(string name)
         {
             return _context.Owners.Any(o => o.Name == name);
+        }
+
+        public bool CreateOwner(int petId, Owner owner)
+        {
+            var Pet = _context.Pets.Where(p => p.Id == petId).FirstOrDefault();
+            var PetOwner = new PetOwner()
+            {
+                Pet = Pet,
+                Owner = owner,
+            };
+
+            _context.Add(PetOwner);
+            _context.Add(owner);
+
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var Save = _context.SaveChanges();
+            return Save > 0 ? true : false;
         }
     }
 }

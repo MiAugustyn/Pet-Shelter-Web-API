@@ -11,11 +11,18 @@ namespace Pet_Shelter_Web_API.Controllers
     public class NoteController : Controller
     {
         private readonly INoteRepository _noteRepository;
+        private readonly IWorkerRepository _workerRepository;
+        private readonly IPetRepository _petRepository;
         private readonly IMapper _mapper;
 
-        public NoteController(INoteRepository noteRepository, IMapper mapper)
+        public NoteController(INoteRepository noteRepository,
+            IWorkerRepository workerRepository,
+            IPetRepository petRepository,
+            IMapper mapper)
         {
             _noteRepository = noteRepository;
+            _workerRepository = workerRepository;
+            _petRepository = petRepository;
             _mapper = mapper;
         }
 
@@ -91,6 +98,45 @@ namespace Pet_Shelter_Web_API.Controllers
             }
 
             return Ok(Pet);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateNote([FromQuery] int WorkerId, [FromQuery] int PetId, [FromBody] NoteDTO NewNote)
+        {
+            if (NewNote == null || !_workerRepository.WorkerExists(WorkerId) || !_petRepository.PetExists(PetId))
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewNoteCheck = _noteRepository.GetNotes()
+                .Where(n => n.Description.Trim().ToLower() == NewNote.Description.Trim().ToLower())
+                .FirstOrDefault();
+
+            if (NewNoteCheck != null)
+            {
+                ModelState.AddModelError("", "Note already exiss.");
+                return StatusCode(422);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewNoteMap = _mapper.Map<Note>(NewNote);
+
+            NewNoteMap.Worker = _workerRepository.GetWorker(WorkerId);
+            NewNoteMap.Pet = _petRepository.GetPet(PetId);
+
+            if (!_noteRepository.CreateNote(NewNoteMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving note.");
+                return StatusCode(500);
+            }
+
+            return Ok("Note created successfully.");
         }
     }
 }

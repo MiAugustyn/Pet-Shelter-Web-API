@@ -12,5 +12,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         ICollection<Note> GetNotesByPet(int petId);
         bool PetExists(int id);
         bool PetExists(string name);
+        bool CreatePet(Pet pet);
+        bool Save();
     }
 }

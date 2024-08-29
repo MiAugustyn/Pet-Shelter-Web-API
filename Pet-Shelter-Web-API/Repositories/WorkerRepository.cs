@@ -42,5 +42,17 @@ namespace Pet_Shelter_Web_API.Repositories
         {
             return _context.Workers.Any(w => w.Name == name);
         }
+
+        public bool CreateWorker(Worker worker)
+        {
+            _context.Add(worker);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var Save = _context.SaveChanges();
+            return Save > 0 ? true : false;
+        }
     }
 }

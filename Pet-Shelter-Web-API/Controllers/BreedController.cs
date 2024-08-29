@@ -73,5 +73,41 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok(Pets);
         }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateBreed([FromBody] BreedDTO NewBreed)
+        {
+            if (NewBreed == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var BreedCheck = _breedRepository.GetBreeds()
+                .Where(b => b.Name.Trim().ToLower() == NewBreed.Name.Trim().ToLower())
+                .FirstOrDefault();
+
+            if (BreedCheck != null)
+            {
+                ModelState.AddModelError("", "Breed already exists.");
+                return StatusCode(422);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewBreedMap = _mapper.Map<Breed>(NewBreed);
+
+            if (!_breedRepository.CreateBreed(NewBreedMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving breed.");
+                return StatusCode(500);
+            }
+
+            return Ok("Breed created succesfully.");
+        }
     }
 }

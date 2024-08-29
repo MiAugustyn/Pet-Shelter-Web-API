@@ -8,5 +8,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         Specie GetSpecie(int id);
         ICollection<Pet> GetPetsBySpecie(int specieId);
         bool SpecieExists(int id);
+        bool CreateSpecie(Specie specie);
+        bool Save();
     }
 }

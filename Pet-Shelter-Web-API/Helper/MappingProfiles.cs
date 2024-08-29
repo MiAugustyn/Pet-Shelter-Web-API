@@ -8,13 +8,13 @@ namespace PetShelterWebAPI.Helper
     {
         public MappingProfiles()
         {
-            CreateMap<Pet, PetDTO>();
-            CreateMap<Owner, OwnerDTO>();
-            CreateMap<Shelter, ShelterDTO>();
-            CreateMap<Worker, WorkerDTO>();
-            CreateMap<Note, NoteDTO>();
-            CreateMap<Specie, SpecieDTO>();
-            CreateMap<Breed, BreedDTO>();
+            CreateMap<Pet, PetDTO>().ReverseMap();
+            CreateMap<Owner, OwnerDTO>().ReverseMap();
+            CreateMap<Shelter, ShelterDTO>().ReverseMap();
+            CreateMap<Worker, WorkerDTO>().ReverseMap();
+            CreateMap<Note, NoteDTO>().ReverseMap();
+            CreateMap<Specie, SpecieDTO>().ReverseMap();
+            CreateMap<Breed, BreedDTO>().ReverseMap();
         }
     }
 }

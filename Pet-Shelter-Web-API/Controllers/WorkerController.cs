@@ -11,11 +11,13 @@ namespace Pet_Shelter_Web_API.Controllers
     public class WorkerController : Controller
     {
         private readonly IWorkerRepository _workerRepository;
+        private readonly IShelterRepository _shelterRepository;
         private readonly IMapper _mapper;
 
-        public WorkerController(IWorkerRepository workerRepository, IMapper mapper)
+        public WorkerController(IWorkerRepository workerRepository, IShelterRepository shelterRepository, IMapper mapper)
         {
             _workerRepository = workerRepository;
+            _shelterRepository = shelterRepository;
             _mapper = mapper;
         }
 
@@ -92,6 +94,44 @@ namespace Pet_Shelter_Web_API.Controllers
             }
 
             return Ok(Notes);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateWorker([FromQuery] int ShelterId, [FromBody] WorkerDTO NewWorker)
+        {
+            if (NewWorker == null || !_shelterRepository.ShelterExists(ShelterId))
+            {
+                return BadRequest(ModelState);
+            }
+
+            var WorkerCheck = _workerRepository.GetWorkers()
+                .Where(w => w.Email.Trim().ToLower() == NewWorker.Email.ToLower())
+                .FirstOrDefault();
+
+            if (WorkerCheck != null)
+            {
+                ModelState.AddModelError("", "Worker already exists.");
+                return StatusCode(422);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewWorkerMap = _mapper.Map<Worker>(NewWorker);
+
+            NewWorkerMap.Shelter = _shelterRepository.GetShelter(ShelterId);
+
+            if (!_workerRepository.CreateWorker(NewWorkerMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving worker.");
+                return StatusCode(500);
+            }
+
+            return Ok("Worker created successfully.");
         }
     }
 }

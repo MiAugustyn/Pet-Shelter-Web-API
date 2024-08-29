@@ -32,5 +32,17 @@ namespace Pet_Shelter_Web_API.Repositories
         {
             return _context.Species.Any(s => s.Id == id);
         }
+
+        public bool CreateSpecie(Specie specie)
+        {
+            _context.Add(specie);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var Save = _context.SaveChanges();
+            return Save > 0 ? true : false;
+        }
     }
 }

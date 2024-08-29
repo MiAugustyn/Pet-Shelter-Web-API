@@ -32,5 +32,17 @@ namespace Pet_Shelter_Web_API.Repositories
         {
             return _context.Breeds.Any(b => b.Id == id);
         }
+
+        public bool CreateBreed(Breed breed)
+        {
+            _context.Add(breed);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var Save = _context.SaveChanges();
+            return Save > 0 ? true : false;
+        }
     }
 }

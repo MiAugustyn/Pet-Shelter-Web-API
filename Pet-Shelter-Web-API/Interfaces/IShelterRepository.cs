@@ -1,4 +1,5 @@
-﻿using PetShelterWebAPI.Models;
+﻿using Pet_Shelter_Web_API.DTO;
+using PetShelterWebAPI.Models;
 
 namespace Pet_Shelter_Web_API.Interfaces
 {
@@ -9,5 +10,8 @@ namespace Pet_Shelter_Web_API.Interfaces
         ICollection<Worker> GetWorkersByShelter(int shelterId);
         ICollection<Pet> GetPetsByShelter(int shelterId);
         bool ShelterExists(int id);
+        bool CreateShelter(Shelter shelter);
+        bool Save();
+
     }
 }

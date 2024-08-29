@@ -10,5 +10,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         ICollection<Note> GetNotesByWorker(int workerId);
         bool WorkerExists(int id);
         bool WorkerExists(string name);
+        bool CreateWorker(Worker worker);
+        bool Save();
     }
 }

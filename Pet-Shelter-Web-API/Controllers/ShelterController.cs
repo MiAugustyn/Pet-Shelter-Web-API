@@ -92,5 +92,41 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok(Pets);
         }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateShelter([FromBody] ShelterDTO NewShelter)
+        {
+            if (NewShelter == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewShelterCheck = _shelterRepository.GetShelters()
+                .Where(s => s.Address.Trim().ToLower() == NewShelter.Address.Trim().ToLower())
+                .FirstOrDefault();
+
+            if (NewShelterCheck != null)
+            {
+                ModelState.AddModelError("", "Shelter already exists.");
+                return StatusCode(422);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewShelterMap = _mapper.Map<Shelter>(NewShelter);
+
+            if (!_shelterRepository.CreateShelter(NewShelterMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving shelter.");
+                return StatusCode(500);
+            }
+
+            return Ok("Shelter created successfully.");
+        }
     }
 }

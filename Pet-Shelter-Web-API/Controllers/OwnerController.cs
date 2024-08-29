@@ -11,11 +11,13 @@ namespace Pet_Shelter_Web_API.Controllers
     public class OwnerController : Controller
     {
         private readonly IOwnerRepository _ownerRepository;
+        private readonly IPetRepository _petRepository;
         private readonly IMapper _mapper;
 
-        public OwnerController(IOwnerRepository ownerRepository, IMapper mapper)
+        public OwnerController(IOwnerRepository ownerRepository, IPetRepository petRepository, IMapper mapper)
         {
             _ownerRepository = ownerRepository;
+            _petRepository = petRepository;
             _mapper = mapper;
         }
 
@@ -91,6 +93,42 @@ namespace Pet_Shelter_Web_API.Controllers
             }
 
             return Ok(Pets);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateOwner([FromQuery] int PetId, [FromBody] OwnerDTO NewOwner)
+        {
+            if (NewOwner == null || !_petRepository.PetExists(PetId))
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewOwnerCheck = _ownerRepository.GetOwners()
+                .Where(o => o.Email.Trim().ToLower() == NewOwner.Email.Trim().ToLower())
+                .FirstOrDefault();
+
+            if (NewOwnerCheck != null)
+            {
+                ModelState.AddModelError("", "Owner already exists.");
+                return StatusCode(422);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewOwnerMap = _mapper.Map<Owner>(NewOwner);
+
+            if (!_ownerRepository.CreateOwner(PetId, NewOwnerMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving owner.");
+                return StatusCode(500);
+            }
+
+            return Ok("Owner created successfully.");
         }
     }
 }

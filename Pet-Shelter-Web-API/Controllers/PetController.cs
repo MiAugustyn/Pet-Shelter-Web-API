@@ -11,11 +11,21 @@ namespace Pet_Shelter_Web_API.Controllers
     public class PetController : Controller
     {
         private readonly IPetRepository _petRepository;
+        private readonly IShelterRepository _shelterRepository;
+        private readonly ISpecieRepository _specieRepository;
+        private readonly IBreedRepository _breedRepository;
         private readonly IMapper _mapper;
 
-        public PetController(IPetRepository petRepository, IMapper mapper)
+        public PetController(IPetRepository petRepository,
+            IShelterRepository shelterRepository,
+            ISpecieRepository specieRepository,
+            IBreedRepository breedRepository,
+            IMapper mapper)
         {
             _petRepository = petRepository;
+            _shelterRepository = shelterRepository;
+            _specieRepository = specieRepository;
+            _breedRepository = breedRepository;
             _mapper = mapper;
         }
 
@@ -133,6 +143,46 @@ namespace Pet_Shelter_Web_API.Controllers
             }
 
             return Ok(Notes);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreatePet([FromQuery] int ShelterId, [FromQuery] int SpecieId, [FromQuery] int BreedId, [FromBody] PetDTO NewPet)
+        {
+            if (NewPet == null || !_shelterRepository.ShelterExists(ShelterId))
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewPetCheck = _petRepository.GetPets()
+                .Where(p => p.Name.Trim().ToLower() == NewPet.Name.Trim().ToLower() && p.Age == NewPet.Age)
+                .FirstOrDefault();
+
+            if (NewPetCheck != null)
+            {
+                ModelState.AddModelError("", "Pet already exists.");
+                return StatusCode(422);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NewPetMap = _mapper.Map<Pet>(NewPet);
+
+            NewPetMap.Shelter = _shelterRepository.GetShelter(ShelterId);
+            NewPetMap.Specie = _specieRepository.GetSpecie(SpecieId);
+            NewPetMap.Breed = _breedRepository.GetBreed(BreedId);
+
+            if (!_petRepository.CreatePet(NewPetMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving Pet.");
+                return StatusCode(500);
+            }
+
+            return Ok("Pet created successfully.");
         }
     }
 }

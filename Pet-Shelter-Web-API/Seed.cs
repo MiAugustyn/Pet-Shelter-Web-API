@@ -32,7 +32,7 @@ namespace PetShelterWebAPI
                                 Surname = "Doe",
                                 PhoneNumber = 123456789,
                                 Email = "john.doe@example.com",
-                                DateOfBirth = new DateOnly(1990, 1, 1),
+                                DateOfBirth = new DateTime(1990, 1, 1),
                             },
 
                             new Worker()
@@ -41,7 +41,7 @@ namespace PetShelterWebAPI
                                 Surname = "Smith",
                                 PhoneNumber = 987654321,
                                 Email = "jane.smith@example.com",
-                                DateOfBirth = new DateOnly(1985, 5, 15),
+                                DateOfBirth = new DateTime(1985, 5, 15),
                             },
 
                             new Worker()
@@ -50,7 +50,7 @@ namespace PetShelterWebAPI
                                 Surname = "Johnson",
                                 PhoneNumber = 555123456,
                                 Email = "alice.johnson@example.com",
-                                DateOfBirth = new DateOnly(1995, 10, 30),
+                                DateOfBirth = new DateTime(1995, 10, 30),
 
                             }
                         }
@@ -67,7 +67,7 @@ namespace PetShelterWebAPI
                                 Surname = "Brown",
                                 PhoneNumber = 444987654,
                                 Email = "michael.brown@example.com",
-                                DateOfBirth = new DateOnly(1988, 3, 22)
+                                DateOfBirth = new DateTime(1988, 3, 22)
                             },
 
                             new Worker()
@@ -76,7 +76,7 @@ namespace PetShelterWebAPI
                                 Surname = "Davis",
                                 PhoneNumber = 333876543,
                                 Email = "emily.davis@example.com",
-                                DateOfBirth = new DateOnly(1992, 7, 14)
+                                DateOfBirth = new DateTime(1992, 7, 14)
                             },
 
                             new Worker()
@@ -85,7 +85,7 @@ namespace PetShelterWebAPI
                                 Surname = "Wilson",
                                 PhoneNumber = 222765432,
                                 Email = "david.wilson@example.com",
-                                DateOfBirth = new DateOnly(1983, 11, 5)
+                                DateOfBirth = new DateTime(1983, 11, 5)
                             }
                         }
                     },
