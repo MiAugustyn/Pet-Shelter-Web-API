@@ -184,5 +184,48 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok("Pet created successfully.");
         }
+
+        [HttpPut("{PetId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdatePet(int PetId, [FromQuery] int ShelterId, 
+            [FromQuery] int SpecieId, [FromQuery] int BreedId, [FromBody] PetDTO UpdatedPet)
+        {
+            if (UpdatedPet  == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_petRepository.PetExists(PetId) || !_shelterRepository.ShelterExists(ShelterId)
+                || !_breedRepository.BreedExists(BreedId) || !_specieRepository.SpecieExists(SpecieId))
+            {
+                return NotFound();
+            }
+
+            if (UpdatedPet.Id != PetId)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var PetMap = _mapper.Map<Pet>(UpdatedPet);
+            PetMap.Shelter = _shelterRepository.GetShelter(ShelterId);
+            PetMap.Specie = _specieRepository.GetSpecie(SpecieId);
+            PetMap.Breed = _breedRepository.GetBreed(BreedId);
+
+            if (!_petRepository.UpdatePet(PetMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating Pet.");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
     }
 }

@@ -11,6 +11,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         ICollection<Pet> GetPetsByShelter(int shelterId);
         bool ShelterExists(int id);
         bool CreateShelter(Shelter shelter);
+        bool UpdateShelter(Shelter shelter);
         bool Save();
 
     }

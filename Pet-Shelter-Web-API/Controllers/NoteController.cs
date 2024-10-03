@@ -138,5 +138,45 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok("Note created successfully.");
         }
+
+        [HttpPut("{NoteId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateNote(int NoteId, [FromQuery] int WorkerId, [FromQuery] int PetId, [FromBody] NoteDTO UpdatedNote)
+        {
+            if (UpdatedNote == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_noteRepository.NoteExists(NoteId) || !_workerRepository.WorkerExists(WorkerId) || _petRepository.PetExists(PetId))
+            {
+                return NotFound();
+            }
+
+            if (UpdatedNote.Id != NoteId)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var NoteMap = _mapper.Map<Note>(UpdatedNote);
+
+            NoteMap.Worker = _workerRepository.GetWorker(WorkerId);
+            NoteMap.Pet = _petRepository.GetPet(PetId);
+
+            if (!_noteRepository.UpdateNote(NoteMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating note.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
     }
 }

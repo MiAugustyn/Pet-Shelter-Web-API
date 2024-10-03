@@ -130,5 +130,42 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok("Owner created successfully.");
         }
+
+        [HttpPut("{OwnerId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateOwner(int OwnerId, [FromBody] OwnerDTO UpdatedOwner)
+        {
+            if (UpdatedOwner == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_ownerRepository.OwnerExists(OwnerId))
+            {
+                return NotFound();
+            }
+
+            if (UpdatedOwner.Id != OwnerId)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var OwnerMap = _mapper.Map<Owner>(UpdatedOwner);
+
+            if (!_ownerRepository.UpdateOwner(OwnerMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating owner.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
     }
 }

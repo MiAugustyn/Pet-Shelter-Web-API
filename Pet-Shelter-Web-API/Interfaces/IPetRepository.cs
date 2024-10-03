@@ -1,4 +1,5 @@
-﻿using PetShelterWebAPI.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PetShelterWebAPI.Models;
 
 namespace Pet_Shelter_Web_API.Interfaces
 {
@@ -13,6 +14,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         bool PetExists(int id);
         bool PetExists(string name);
         bool CreatePet(Pet pet);
+        bool UpdatePet(Pet pet);
         bool Save();
     }
 }

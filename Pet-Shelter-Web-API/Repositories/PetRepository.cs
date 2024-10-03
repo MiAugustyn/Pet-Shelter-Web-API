@@ -59,6 +59,12 @@ namespace Pet_Shelter_Web_API.Repositories
             return Save();
         }
 
+        public bool UpdatePet(Pet pet)
+        {
+            _context.Update(pet);
+            return Save();
+        }
+
         public bool Save()
         {
             var Save = _context.SaveChanges();

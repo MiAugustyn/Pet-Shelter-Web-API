@@ -110,5 +110,42 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok("Specie created successfully.");
         }
+
+        [HttpPut("{SpecieId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateSpecie(int SpecieId, [FromBody] SpecieDTO UpdatedSpecie) 
+        {
+            if (UpdatedSpecie == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_specieRepository.SpecieExists(SpecieId))
+            {
+                return NotFound();
+            }
+
+            if (UpdatedSpecie.Id != SpecieId)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var SpecieMap = _mapper.Map<Specie>(UpdatedSpecie);
+
+            if (!_specieRepository.UpdateSpecie(SpecieMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating specie.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
     }
 }

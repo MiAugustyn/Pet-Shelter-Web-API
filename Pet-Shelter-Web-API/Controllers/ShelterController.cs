@@ -128,5 +128,42 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok("Shelter created successfully.");
         }
+
+        [HttpPut("{ShelterId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateShelter(int ShelterId, [FromBody] ShelterDTO UpdatedShelter)
+        {
+            if (UpdatedShelter == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_shelterRepository.ShelterExists(ShelterId))
+            {
+                return NotFound();
+            }
+
+            if ( UpdatedShelter.Id != ShelterId)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var ShelterMap = _mapper.Map<Shelter>(UpdatedShelter);
+
+            if (!_shelterRepository.UpdateShelter(ShelterMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating shelter.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
     }
 }

@@ -109,5 +109,42 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok("Breed created succesfully.");
         }
+
+        [HttpPut("{BreedId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateBreed(int BreedId, [FromBody] BreedDTO UpdatedBreed)
+        {
+            if (UpdatedBreed == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_breedRepository.BreedExists(BreedId))
+            {
+                return NotFound();
+            }
+
+            if (UpdatedBreed.Id != BreedId)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var BreedMap = _mapper.Map<Breed>(UpdatedBreed);
+
+            if (!_breedRepository.UpdateBreed(BreedMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating breed.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
     }
 }

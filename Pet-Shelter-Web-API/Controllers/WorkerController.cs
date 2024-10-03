@@ -133,5 +133,44 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return Ok("Worker created successfully.");
         }
+
+        [HttpPut("{WorkerId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateWorker(int WorkerId, [FromQuery] int ShelterId, [FromBody] WorkerDTO UpdatedWorker)
+        {
+            if (UpdatedWorker == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_workerRepository.WorkerExists(WorkerId) || !_shelterRepository.ShelterExists(ShelterId))
+            {
+                return NotFound();
+            }
+
+            if (UpdatedWorker.Id != WorkerId)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var WorkerMap = _mapper.Map<Worker>(UpdatedWorker);
+
+            WorkerMap.Shelter = _shelterRepository.GetShelter(ShelterId);
+
+            if (!_workerRepository.UpdateWorker(WorkerMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating worker.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
     }
 }

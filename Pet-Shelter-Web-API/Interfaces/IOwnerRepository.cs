@@ -11,6 +11,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         bool OwnerExists(int id);
         bool OwnerExists(string name);
         bool CreateOwner(int petId, Owner owner);
+        bool UpdateOwner(Owner owner);
         bool Save();
     }
 }
