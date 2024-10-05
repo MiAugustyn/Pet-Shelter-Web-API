@@ -12,6 +12,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         bool WorkerExists(string name);
         bool CreateWorker(Worker worker);
         bool UpdateWorker(Worker worker);
+        bool DeleteWorker(Worker worker);
         bool Save();
     }
 }

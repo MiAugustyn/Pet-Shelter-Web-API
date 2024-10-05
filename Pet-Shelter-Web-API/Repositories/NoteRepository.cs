@@ -50,6 +50,12 @@ namespace Pet_Shelter_Web_API.Repositories
             return Save();
         }
 
+        public bool DeleteNote(Note note)
+        {
+            _context.Remove(note);
+            return Save();
+        }
+
         public bool Save()
         {
             var Save = _context.SaveChanges();

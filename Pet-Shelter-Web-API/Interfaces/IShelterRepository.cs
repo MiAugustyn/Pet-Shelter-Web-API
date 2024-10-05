@@ -12,6 +12,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         bool ShelterExists(int id);
         bool CreateShelter(Shelter shelter);
         bool UpdateShelter(Shelter shelter);
+        bool DeleteShelter(Shelter shelter);
         bool Save();
 
     }

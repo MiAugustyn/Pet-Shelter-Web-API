@@ -10,6 +10,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         bool SpecieExists(int id);
         bool CreateSpecie(Specie specie);
         bool UpdateSpecie(Specie specie);
+        bool DeleteSpecie(Specie specie);
         bool Save();
     }
 }

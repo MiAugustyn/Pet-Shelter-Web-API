@@ -65,6 +65,12 @@ namespace Pet_Shelter_Web_API.Repositories
             return Save();
         }
 
+        public bool DeleteOwner(Owner owner)
+        {
+            _context.Remove(owner);
+            return Save();
+        }
+
         public bool Save()
         {
             var Save = _context.SaveChanges();

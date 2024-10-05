@@ -14,7 +14,7 @@ namespace Pet_Shelter_Web_API.Controllers
         private readonly ISpecieRepository _specieRepository;
         private readonly IMapper _mapper;
 
-        public SpecieController(ISpecieRepository specieRepository,IMapper mapper)
+        public SpecieController(ISpecieRepository specieRepository, IMapper mapper)
         {
             _specieRepository = specieRepository;
             _mapper = mapper;
@@ -115,7 +115,7 @@ namespace Pet_Shelter_Web_API.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateSpecie(int SpecieId, [FromBody] SpecieDTO UpdatedSpecie) 
+        public IActionResult UpdateSpecie(int SpecieId, [FromBody] SpecieDTO UpdatedSpecie)
         {
             if (UpdatedSpecie == null)
             {
@@ -142,6 +142,33 @@ namespace Pet_Shelter_Web_API.Controllers
             if (!_specieRepository.UpdateSpecie(SpecieMap))
             {
                 ModelState.AddModelError("", "Something went wrong while updating specie.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{SpecieId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteSpecie(int SpecieId)
+        {
+            if (!_specieRepository.SpecieExists(SpecieId))
+            {
+                return NotFound(ModelState);
+            }
+
+            var Specie = _specieRepository.GetSpecie(SpecieId);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_specieRepository.DeleteSpecie(Specie))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting specie.");
                 return StatusCode(500);
             }
 

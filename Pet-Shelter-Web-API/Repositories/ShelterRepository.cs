@@ -47,7 +47,13 @@ namespace Pet_Shelter_Web_API.Repositories
 
         public bool UpdateShelter(Shelter shelter)
         {
-            _context .Update(shelter);
+            _context.Update(shelter);
+            return Save();
+        }
+
+        public bool DeleteShelter(Shelter shelter)
+        {
+            _context.Remove(shelter);
             return Save();
         }
 

@@ -178,5 +178,31 @@ namespace Pet_Shelter_Web_API.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{NoteId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteNote(int NoteId)
+        {
+            if (!_noteRepository.NoteExists(NoteId))
+            {
+                return NotFound(ModelState);
+            }
+
+            var Note = _noteRepository.GetNote(NoteId);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_noteRepository.DeleteNote(Note))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting note.");
+            }
+
+            return NoContent();
+        }
     }
 }

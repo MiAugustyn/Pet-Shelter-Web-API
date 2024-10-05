@@ -10,6 +10,7 @@ namespace Pet_Shelter_Web_API.Interfaces
         bool BreedExists(int id);
         bool CreateBreed(Breed breed);
         bool UpdateBreed(Breed breed);
+        bool DeleteBreed(Breed breed);
         bool Save();
     }
 }

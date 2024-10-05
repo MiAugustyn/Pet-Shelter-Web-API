@@ -227,5 +227,32 @@ namespace Pet_Shelter_Web_API.Controllers
             return NoContent();
         }
 
+        [HttpDelete("{PetId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeletePet(int PetId)
+        {
+            if (!_petRepository.PetExists(PetId))
+            {
+                return NotFound(ModelState);
+            }
+
+            var Pet = _petRepository.GetPet(PetId);
+
+            if (!ModelState.IsValid)
+            { 
+                return BadRequest(ModelState); 
+            }
+
+            if (!_petRepository.DeletePet(Pet))
+            {
+                ModelState.AddModelError("", "Something went wrong while deleting Pet.");
+                return StatusCode(500);
+            }
+
+            return NoContent();
+        }
+
     }
 }
